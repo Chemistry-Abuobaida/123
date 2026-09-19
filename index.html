@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>محاكي المعايرة ومنحنيات pH - مدرسة أبو عبيدة للبنين</title>
+  <style>
+    :root {
+      --primary: #1a56db;
+      --primary-dark: #1e429f;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #cbd5e1;
+      --danger: #dc2626;
+      --success: #057a55;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+    
+    .header { text-align: center; margin-bottom: 8px; }
+    .header h1 { margin: 2px 0; color: var(--primary); font-size: 1.35rem; }
+    .header p { margin: 0; color: #64748b; font-size: 0.82rem; }
+
+    .container { max-width: 1480px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+
+    /* الصف العلوي للإعدادات المستقلة */
+    .top-settings-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 900px) {
+      .top-settings-row { grid-template-columns: 1fr; }
+    }
+
+    .section-box {
+      border-radius: 9px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+    }
+    .setup-section { background: #f8fafc; border-color: #cbd5e1; }
+    .acid-section { background: #fff5f5; border-color: #fecaca; }
+    .base-section { background: #f0fdf4; border-color: #bbf7d0; }
+
+    .section-title {
+      font-size: 0.88rem;
+      font-weight: bold;
+      margin: 0 0 7px 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .setup-title { color: #1e40af; }
+    .acid-title { color: #b91c1c; }
+    .base-title { color: #15803d; }
+
+    .form-group { margin-bottom: 8px; }
+    label { display: block; font-weight: 600; margin-bottom: 3px; font-size: 0.78rem; color: #334155; }
+    select, input[type="number"] {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1.2px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.84rem;
+      background: #fff;
+    }
+    select:focus, input:focus { outline: none; border-color: var(--primary); }
+
+    /* الصف السفلي التفاعلي */
+    .bottom-interactive-row {
+      display: grid;
+      grid-template-columns: 370px 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+    @media (max-width: 990px) {
+      .bottom-interactive-row { grid-template-columns: 1fr; }
+    }
+
+    .control-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .chart-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 10px;
+      border: 1.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chart-teacher-banner {
+      width: 100%;
+      max-width: 860px;
+      background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+      color: #ffffff;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(30, 58, 138, 0.3);
+      margin-bottom: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      letter-spacing: 0.3px;
+    }
+
+    .canvas-wrapper {
+      width: 100%;
+      max-width: 860px;
+      height: 480px;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .live-ph-display {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 4px 0 8px 0;
+      background: #eff6ff;
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid #bfdbfe;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+    button {
+      padding: 8px 4px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.8rem;
+    }
+    .btn-add { background: #0e9f6e; color: #fff; }
+    .btn-add:hover { background: var(--success); }
+    .btn-sub { background: #e02424; color: #fff; }
+    .btn-sub:hover { background: var(--danger); }
+    .btn-action { background: var(--primary); color: #fff; grid-column: span 2; padding: 9px; }
+    .btn-reset { background: #f1f5f9; color: #334155; border: 1px solid var(--border); grid-column: span 2; }
+
+    .slider-box {
+      background: #f8fafc;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      margin-bottom: 8px;
+    }
+    .slider-box label { font-size: 0.78rem; font-weight: bold; color: #1e293b; }
+    .slider-box input[type="range"] { width: 100%; margin-top: 3px; }
+
+    .indicator-box {
+      padding: 7px;
+      border-radius: 7px;
+      font-size: 0.78rem;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .data-table th, .data-table td {
+      border: 1px solid #e2e8f0;
+      padding: 6px 8px;
+      text-align: right;
+    }
+    .data-table th { background: #f1f5f9; color: #475569; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>مختبر المعايرة المتقدم ومنحنيات الرقم الهيدروجيني (pH)</h1>
+      <p>محاكاة دقيقة لحسابات المعايرة وكواشف كتاب الكيمياء المعتمدة لمنهج كامبريدج</p>
+    </div>
+
+    <!-- الصف العلوي للإعدادات -->
+    <div class="top-settings-row">
+      <!-- 1. إعداد نظام التوزيع والدليل -->
+      <div class="section-box setup-section">
+        <div class="section-title setup-title">⚙️ نظام المعايرة والكاشف</div>
+        <div class="form-group">
+          <label>طبيعة المعايرة (التوزيع):</label>
+          <select id="setupMode" onchange="resetTitration()">
+            <option value="ACID_IN_FLASK" selected>الحمض في الدورق (القاعدة في السحاحة)</option>
+            <option value="BASE_IN_FLASK">القاعدة في الدورق (الحمض في السحاحة)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>حجم محلول الدورق المخروطي (cm³):</label>
+          <input type="number" id="volFlask" value="25.0" step="1" min="5" onchange="resetTitration()">
+        </div>
+        <div class="form-group">
+          <label>الكاشف (الدليل) من الكتاب المدرسي:</label>
+          <select id="indicator" onchange="drawGraph(); updateInfo();">
+            <option value="phenolphthalein">الفينولفثالين (8.2 - 10.0)</option>
+            <option value="methyl_orange">الميثيل البرتقالي (3.1 - 4.4)</option>
+            <option value="bromothymol_blue">بروموثيمول الأزرق (6.0 - 7.6)</option>
+            <option value="methyl_red">الميثيل الأحمر (4.4 - 6.2)</option>
+            <option value="bromocresol_green">بروموكريسول الأخضر (3.8 - 5.4)</option>
+            <option value="thymolphthalein">الثيمولفثالين (9.3 - 10.5)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 2. أيقونة الحمض المدمجة والمستقلة -->
+      <div class="section-box acid-section">
+        <div class="section-title acid-title">🧪 إعدادات الحمض (مستقل)</div>
+        <div class="form-group">
+          <label>نوع وقوة وتكافؤ الحمض:</label>
+          <select id="acidCombo" onchange="resetTitration()">
+            <option value="STRONG_1" selected>حمض قوي أحادي البروتون (مثل HCl, HNO₃)</option>
+            <option value="STRONG_2">حمض قوي ثنائي البروتون (مثل H₂SO₄)</option>
+            <option value="WEAK_1">حمض ضعيف أحادي البروتون (مثل CH₃COOH)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>تركيز الحمض (mol/dm³):</label>
+          <input type="number" id="acidConc" value="0.10" step="0.01" min="0.01" onchange="resetTitration()">
+        </div>
+      </div>
+
+      <!-- 3. أيقونة القاعدة المدمجة والمستقلة -->
+      <div class="section-box base-section">
+        <div class="section-title base-title">🧼 إعدادات القاعدة (مستقل)</div>
+        <div class="form-group">
+          <label>نوع وقوة وتكافؤ القاعدة:</label>
+          <select id="baseCombo" onchange="resetTitration()">
+            <option value="STRONG_1" selected>قاعدة قوية أحادية الهيدروكسيد (مثل NaOH, KOH)</option>
+            <option value="STRONG_2">قاعدة قوية ثنائية الهيدروكسيد (مثل Ba(OH)₂, Ca(OH)₂)</option>
+            <option value="WEAK_1">قاعدة ضعيفة أحادية الهيدروكسيد (مثل NH₃)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>تركيز القاعدة (mol/dm³):</label>
+          <input type="number" id="baseConc" value="0.10" step="0.01" min="0.01" onchange="resetTitration()">
+        </div>
+      </div>
+    </div>
+
+    <!-- الصف السفلي التفاعلي -->
+    <div class="bottom-interactive-row">
+      <div class="control-card">
+        <div>
+          <div class="live-ph-display" id="livePHDisplay">pH = 0.00</div>
+
+          <div class="btn-grid">
+            <button class="btn-sub" onclick="stepVolume(-0.5)">- 0.5 cm³</button>
+            <button class="btn-sub" onclick="stepVolume(-0.1)">- 0.1 cm³</button>
+            <button class="btn-add" onclick="stepVolume(+0.1)">+ 0.1 cm³</button>
+            <button class="btn-add" onclick="stepVolume(+0.5)">+ 0.5 cm³</button>
+
+            <button class="btn-action" id="autoBtn" onclick="toggleAutoRun()">تشغيل المحاكاة المستمرة</button>
+            <button class="btn-reset" onclick="resetTitration()">إعادة ضبط</button>
+          </div>
+
+          <div class="slider-box">
+            <label id="sliderLabel">الحجم المضاف: 0.0 cm³</label>
+            <input type="range" id="volSlider" min="0" max="60" step="0.1" value="0" oninput="onSliderMove(this.value)">
+          </div>
+
+          <div id="indicatorPanel" class="indicator-box"></div>
+        </div>
+
+        <table class="data-table">
+          <tbody>
+            <tr><th>الحجم المضاف حالياً</th><td id="tblVAdded">0.0 cm³</td></tr>
+            <tr><th>حجم نقطة التكافؤ (V_eq)</th><td id="tblVeq" style="color: #057a55; font-weight: bold;">25.0 cm³</td></tr>
+            <tr><th>pH نقطة التكافؤ (pH_eq)</th><td id="tblPHeq" style="color: #057a55; font-weight: bold;">pH ≈ 7.00</td></tr>
+            <tr><th>لون الكاشف الفعلي الآن</th><td id="tblIndColor">-</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- بطاقة الرسم البياني مع الشعار المظلل في أعلاها -->
+      <div class="chart-card">
+        <div class="chart-teacher-banner">
+          🔬 إعداد: معلمو الكيمياء بمدرسة أبو عبيدة للبنين
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="titrationCanvas" width="860" height="480"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const Kw = 1.0e-14;
+    const Ka_CH3COOH = 1.74e-5;
+    const Kb_NH3 = 1.78e-5;
+
+    let currentVAdded = 0.0;
+    let maxVLimit = 60.0;
+    let isAutoRunning = false;
+    let timer = null;
+
+    const tCanvas = document.getElementById('titrationCanvas');
+    const tCtx = tCanvas.getContext('2d');
+
+    const indicators = {
+      phenolphthalein: { name: 'الفينولفثالين', min: 8.2, max: 10.0, color: 'rgba(236, 72, 153, 0.16)', stroke: '#db2777', acidCol: 'عديم اللون (شفاف)', baseCol: 'وردي / قرمزي' },
+      methyl_orange: { name: 'الميثيل البرتقالي', min: 3.1, max: 4.4, color: 'rgba(249, 115, 22, 0.16)', stroke: '#ea580c', acidCol: 'أحمر', baseCol: 'أصفر' },
+      bromothymol_blue: { name: 'بروموثيمول الأزرق', min: 6.0, max: 7.6, color: 'rgba(59, 130, 246, 0.16)', stroke: '#2563eb', acidCol: 'أصفر', baseCol: 'أزرق' },
+      methyl_red: { name: 'الميثيل الأحمر', min: 4.4, max: 6.2, color: 'rgba(239, 68, 68, 0.16)', stroke: '#dc2626', acidCol: 'أحمر', baseCol: 'أصفر' },
+      bromocresol_green: { name: 'بروموكريسول الأخضر', min: 3.8, max: 5.4, color: 'rgba(16, 185, 129, 0.16)', stroke: '#059669', acidCol: 'أصفر', baseCol: 'أزرق مخضر' },
+      thymolphthalein: { name: 'الثيمولفثالين', min: 9.3, max: 10.5, color: 'rgba(99, 102, 241, 0.16)', stroke: '#4f46e5', acidCol: 'عديم اللون', baseCol: 'أزرق' }
+    };
+
+    function getSystemConfiguration() {
+      const mode = document.getElementById('setupMode').value;
+      const acidVal = document.getElementById('acidCombo').value;
+      const baseVal = document.getElementById('baseCombo').value;
+
+      let acidType = acidVal.startsWith('STRONG') ? 'STRONG' : 'WEAK';
+      let acidBasicity = parseInt(acidVal.split('_')[1]);
+      let acidConc = parseFloat(document.getElementById('acidConc').value);
+
+      let baseType = baseVal.startsWith('STRONG') ? 'STRONG' : 'WEAK';
+      let baseAcidity = parseInt(baseVal.split('_')[1]);
+      let baseConc = parseFloat(document.getElementById('baseConc').value);
+
+      let volFlask = parseFloat(document.getElementById('volFlask').value);
+
+      let Ca, na, Va, Cb, nb, typeCode;
+
+      if (mode === "ACID_IN_FLASK") {
+        Ca = acidConc; na = acidBasicity; Va = volFlask;
+        Cb = baseConc; nb = baseAcidity;
+        if (acidType === 'STRONG' && baseType === 'STRONG') typeCode = 'SA_SB';
+        else if (acidType === 'WEAK' && baseType === 'STRONG') typeCode = 'WA_SB';
+        else if (acidType === 'STRONG' && baseType === 'WEAK') typeCode = 'SA_WB';
+        else typeCode = 'WA_WB';
+      } else {
+        Ca = baseConc; na = baseAcidity; Va = volFlask;
+        Cb = acidConc; nb = acidBasicity;
+        if (baseType === 'STRONG' && acidType === 'STRONG') typeCode = 'SB_SA';
+        else if (baseType === 'STRONG' && acidType === 'WEAK') typeCode = 'SB_WA';
+        else if (baseType === 'WEAK' && acidType === 'STRONG') typeCode = 'WB_SA';
+        else typeCode = 'WB_WA';
+      }
+
+      return { mode, acidType, baseType, Ca, na, Va, Cb, nb, typeCode };
+    }
+
+    function calculatePHAt(Vadded) {
+      const sys = getSystemConfiguration();
+      const Ca = sys.Ca, na = sys.na, Va = sys.Va;
+      const Cb = sys.Cb, nb = sys.nb, Vb = Vadded;
+
+      const nAnalyte = (Ca * na * Va) / 1000.0;
+      const nTitrant = (Cb * nb * Vb) / 1000.0;
+      const totalV_L = (Va + Vb) / 1000.0;
+      const deltaN = nTitrant - nAnalyte;
+
+      let pH = 7.0;
+
+      if (sys.typeCode === 'SA_SB') {
+        const deltaC = deltaN / totalV_L;
+        if (deltaC >= 0) {
+          const OH = (deltaC + Math.sqrt(deltaC * deltaC + 4 * Kw)) / 2;
+          pH = 14.0 + Math.log10(Math.max(1e-14, OH));
+        } else {
+          const H = (-deltaC + Math.sqrt(deltaC * deltaC + 4 * Kw)) / 2;
+          pH = -Math.log10(Math.max(1e-14, H));
+        }
+      } 
+      else if (sys.typeCode === 'SB_SA') {
+        const deltaC = deltaN / totalV_L;
+        if (deltaC >= 0) {
+          const H = (deltaC + Math.sqrt(deltaC * deltaC + 4 * Kw)) / 2;
+          pH = -Math.log10(Math.max(1e-14, H));
+        } else {
+          const OH = (-deltaC + Math.sqrt(deltaC * deltaC + 4 * Kw)) / 2;
+          pH = 14.0 + Math.log10(Math.max(1e-14, OH));
+        }
+      }
+      else if (sys.typeCode === 'WA_SB') {
+        const Ka = Ka_CH3COOH;
+        if (Vb <= 0.001) {
+          pH = -Math.log10(Math.sqrt(Ka * Ca * na));
+        } else if (nTitrant < nAnalyte * 0.999) {
+          const salt = nTitrant;
+          const acid = nAnalyte - nTitrant;
+          pH = -Math.log10(Ka) + Math.log10(salt / acid);
+        } else if (nTitrant > nAnalyte * 1.001) {
+          const remOH = (nTitrant - nAnalyte) / totalV_L;
+          const OH = (remOH + Math.sqrt(remOH * remOH + 4 * Kw)) / 2;
+          pH = 14.0 + Math.log10(Math.max(1e-14, OH));
+        } else {
+          const cSalt = (Ca * Va) / 1000.0 / totalV_L;
+          const Kb = Kw / Ka;
+          pH = 14.0 + Math.log10(Math.sqrt(Kb * cSalt));
+        }
+      }
+      else if (sys.typeCode === 'SB_WA') {
+        const Ka = Ka_CH3COOH;
+        if (nTitrant < nAnalyte * 0.999) {
+          const remOH = (nAnalyte - nTitrant) / totalV_L;
+          pH = 14.0 + Math.log10(Math.max(1e-14, remOH));
+        } else if (nTitrant > nAnalyte * 1.001) {
+          const salt = nAnalyte;
+          const acid = nTitrant - nAnalyte;
+          pH = -Math.log10(Ka) + Math.log10(salt / acid);
+        } else {
+          const cSalt = (Ca * Va) / 1000.0 / totalV_L;
+          const Kb = Kw / Ka;
+          pH = 14.0 + Math.log10(Math.sqrt(Kb * cSalt));
+        }
+      }
+      else if (sys.typeCode === 'SA_WB') {
+        const Kb = Kb_NH3;
+        const Ka = Kw / Kb;
+        if (nTitrant < nAnalyte * 0.999) {
+          const remH = (nAnalyte - nTitrant) / totalV_L;
+          pH = -Math.log10(Math.max(1e-14, remH));
+        } else if (nTitrant > nAnalyte * 1.001) {
+          const base = nTitrant - nAnalyte;
+          const salt = nAnalyte;
+          pH = 14.0 - (-Math.log10(Kb) + Math.log10(salt / base));
+        } else {
+          const cSalt = (Ca * Va) / 1000.0 / totalV_L;
+          pH = -Math.log10(Math.sqrt(Ka * cSalt));
+        }
+      }
+      else if (sys.typeCode === 'WB_SA') {
+        const Kb = Kb_NH3;
+        const Ka = Kw / Kb;
+        if (Vb <= 0.001) {
+          pH = 14.0 + Math.log10(Math.sqrt(Kb * Ca * na));
+        } else if (nTitrant < nAnalyte * 0.999) {
+          const base = nAnalyte - nTitrant;
+          const salt = nTitrant;
+          pH = 14.0 - (-Math.log10(Kb) + Math.log10(salt / base));
+        } else if (nTitrant > nAnalyte * 1.001) {
+          const remH = (nTitrant - nAnalyte) / totalV_L;
+          pH = -Math.log10(Math.max(1e-14, remH));
+        } else {
+          const cSalt = (Ca * Va) / 1000.0 / totalV_L;
+          pH = -Math.log10(Math.sqrt(Ka * cSalt));
+        }
+      }
+
+      return Math.max(0.1, Math.min(13.9, pH));
+    }
+
+    function getVeq() {
+      const sys = getSystemConfiguration();
+      return (sys.Ca * sys.na * sys.Va) / (sys.Cb * sys.nb);
+    }
+
+    function resetTitration() {
+      if (isAutoRunning) toggleAutoRun();
+      currentVAdded = 0.0;
+      const Veq = getVeq();
+      maxVLimit = Math.max(50.0, Math.ceil((Veq * 2.0) / 10) * 10);
+
+      const slider = document.getElementById('volSlider');
+      slider.max = maxVLimit;
+      slider.value = 0;
+
+      updateInfo();
+      drawGraph();
+    }
+
+    function stepVolume(delta) {
+      currentVAdded = Math.max(0, Math.min(maxVLimit, currentVAdded + delta));
+      document.getElementById('volSlider').value = currentVAdded;
+      updateInfo();
+      drawGraph();
+    }
+
+    function onSliderMove(val) {
+      currentVAdded = parseFloat(val);
+      updateInfo();
+      drawGraph();
+    }
+
+    function toggleAutoRun() {
+      const btn = document.getElementById('autoBtn');
+      if (!isAutoRunning) {
+        isAutoRunning = true;
+        btn.innerText = "إيقاف مؤقت";
+        btn.style.background = "#dc2626";
+        timer = setInterval(() => {
+          if (currentVAdded >= maxVLimit) {
+            toggleAutoRun();
+            return;
+          }
+          stepVolume(0.2);
+        }, 50);
+      } else {
+        isAutoRunning = false;
+        clearInterval(timer);
+        btn.innerText = "تشغيل المحاكاة المستمرة";
+        btn.style.background = "var(--primary)";
+      }
+    }
+
+    function updateInfo() {
+      const sys = getSystemConfiguration();
+      const Veq = getVeq();
+      const pHeq = calculatePHAt(Veq);
+      const curPH = calculatePHAt(currentVAdded);
+      const indKey = document.getElementById('indicator').value;
+      const ind = indicators[indKey];
+
+      document.getElementById('livePHDisplay').innerText = `pH = ${curPH.toFixed(2)}`;
+      document.getElementById('sliderLabel').innerText = `الحجم المضاف: ${currentVAdded.toFixed(1)} cm³`;
+
+      document.getElementById('tblVAdded').innerText = `${currentVAdded.toFixed(1)} cm³`;
+      document.getElementById('tblVeq').innerText = `${Veq.toFixed(2)} cm³`;
+      document.getElementById('tblPHeq').innerText = `pH ≈ ${pHeq.toFixed(2)}`;
+
+      let currentColor = "";
+      if (curPH < ind.min) currentColor = ind.acidCol;
+      else if (curPH > ind.max) currentColor = ind.baseCol;
+      else currentColor = "منطقة التحول اللوني (نقطة النهاية)";
+      document.getElementById('tblIndColor').innerText = currentColor;
+
+      let suitable = false;
+      let note = "";
+      if (sys.typeCode === 'SA_SB' || sys.typeCode === 'SB_SA') {
+        suitable = true;
+        note = "مناسب جداً؛ القفزة الرأسية واسعة وتغطي مدى الدليل بالكامل.";
+      } else if (sys.typeCode === 'WA_SB' || sys.typeCode === 'SB_WA') {
+        if (['phenolphthalein', 'thymolphthalein'].includes(indKey)) {
+          suitable = true;
+          note = "مناسب جداً؛ القفزة الرأسية تقع في النطاق القاعدي ومدى الدليل يقع ضمنها.";
+        } else {
+          suitable = false;
+          note = "غير مناسب؛ يتغير لونه قبل الوصول لنقطة التكافؤ داخل المنطقة المنظمة.";
+        }
+      } else if (sys.typeCode === 'SA_WB' || sys.typeCode === 'WB_SA') {
+        if (['methyl_orange', 'methyl_red', 'bromocresol_green'].includes(indKey)) {
+          suitable = true;
+          note = "مناسب جداً؛ القفزة الرأسية تقع في النطاق الحمضي ومدى الدليل يقع ضمنها.";
+        } else {
+          suitable = false;
+          note = "غير مناسب؛ يتغير لونه بعد تجاوز نقطة التكافؤ بفارق كبير.";
+        }
+      }
+
+      const panel = document.getElementById('indicatorPanel');
+      if (suitable) {
+        panel.style.background = '#def7ec';
+        panel.style.color = '#03543f';
+        panel.innerHTML = `✓ الدليل (${ind.name}) <b>مناسب تماماً</b><br><small>${note}</small>`;
+      } else {
+        panel.style.background = '#fde8e8';
+        panel.style.color = '#9b1c1c';
+        panel.innerHTML = `✕ الدليل (${ind.name}) <b>غير مناسب علمياً</b><br><small>${note}</small>`;
+      }
+    }
+
+    function drawGraph() {
+      const w = tCanvas.width;
+      const h = tCanvas.height;
+      const pad = { top: 30, right: 30, bottom: 50, left: 55 };
+
+      tCtx.clearRect(0, 0, w, h);
+
+      const toX = (v) => pad.left + (v / maxVLimit) * (w - pad.left - pad.right);
+      const toY = (pH) => h - pad.bottom - (pH / 14.0) * (h - pad.top - pad.bottom);
+
+      // 1. شبكة الـ pH
+      tCtx.strokeStyle = '#f1f5f9';
+      tCtx.lineWidth = 1;
+      for (let p = 0; p <= 14; p += 2) {
+        tCtx.beginPath();
+        tCtx.moveTo(pad.left, toY(p));
+        tCtx.lineTo(w - pad.right, toY(p));
+        tCtx.stroke();
+
+        tCtx.fillStyle = '#64748b';
+        tCtx.font = '11px sans-serif';
+        tCtx.textAlign = 'right';
+        tCtx.fillText(p.toString(), pad.left - 8, toY(p) + 4);
+      }
+
+      // خطوط الحجم
+      const stepGrid = maxVLimit <= 60 ? 5 : 10;
+      for (let v = 0; v <= maxVLimit; v += stepGrid) {
+        tCtx.beginPath();
+        tCtx.moveTo(toX(v), h - pad.bottom);
+        tCtx.lineTo(toX(v), pad.top);
+        tCtx.stroke();
+
+        tCtx.fillStyle = '#64748b';
+        tCtx.font = '11px sans-serif';
+        tCtx.textAlign = 'center';
+        tCtx.fillText(v.toString(), toX(v), h - pad.bottom + 16);
+      }
+
+      // 2. مدى الكاشف
+      const indKey = document.getElementById('indicator').value;
+      const ind = indicators[indKey];
+      const yMin = toY(ind.max);
+      const yMax = toY(ind.min);
+
+      tCtx.fillStyle = ind.color;
+      tCtx.fillRect(pad.left, yMin, (w - pad.left - pad.right), yMax - yMin);
+      tCtx.strokeStyle = ind.stroke;
+      tCtx.setLineDash([4, 4]);
+      tCtx.strokeRect(pad.left, yMin, (w - pad.left - pad.right), yMax - yMin);
+      tCtx.setLineDash([]);
+
+      tCtx.fillStyle = ind.stroke;
+      tCtx.font = 'bold 11px sans-serif';
+      tCtx.textAlign = 'left';
+      tCtx.fillText(`مدى تحول ${ind.name} (${ind.min} - ${ind.max})`, pad.left + 10, yMin + 14);
+
+      // 3. المحاور الرئيسية
+      tCtx.strokeStyle = '#334155';
+      tCtx.lineWidth = 2;
+      tCtx.beginPath();
+      tCtx.moveTo(pad.left, pad.top);
+      tCtx.lineTo(pad.left, h - pad.bottom);
+      tCtx.lineTo(w - pad.right, h - pad.bottom);
+      tCtx.stroke();
+
+      tCtx.fillStyle = '#0f172a';
+      tCtx.font = 'bold 11px sans-serif';
+      tCtx.textAlign = 'center';
+      tCtx.fillText("الحجم المضاف من السحاحة (cm³)", pad.left + (w - pad.left - pad.right)/2, h - 12);
+
+      // 4. رسم منحنى المعايرة
+      tCtx.beginPath();
+      tCtx.strokeStyle = '#1a56db';
+      tCtx.lineWidth = 3;
+
+      const stepPlot = 0.1;
+      let first = true;
+      for (let v = 0; v <= currentVAdded; v += stepPlot) {
+        const curP = calculatePHAt(v);
+        if (first) {
+          tCtx.moveTo(toX(v), toY(curP));
+          first = false;
+        } else {
+          tCtx.lineTo(toX(v), toY(curP));
+        }
+      }
+      const curPH = calculatePHAt(currentVAdded);
+      tCtx.lineTo(toX(currentVAdded), toY(curPH));
+      tCtx.stroke();
+
+      // 5. إسقاط وتوصيل نقطة التكافؤ
+      const Veq = getVeq();
+      const pHeq = calculatePHAt(Veq);
+
+      if (currentVAdded >= Veq) {
+        const xEq = toX(Veq);
+        const yEq = toY(pHeq);
+
+        tCtx.beginPath();
+        tCtx.setLineDash([5, 4]);
+        tCtx.strokeStyle = '#057a55';
+        tCtx.lineWidth = 1.8;
+        tCtx.moveTo(xEq, yEq);
+        tCtx.lineTo(xEq, h - pad.bottom);
+        tCtx.stroke();
+
+        tCtx.beginPath();
+        tCtx.moveTo(xEq, yEq);
+        tCtx.lineTo(pad.left, yEq);
+        tCtx.stroke();
+        tCtx.setLineDash([]);
+
+        tCtx.beginPath();
+        tCtx.arc(xEq, yEq, 6.5, 0, 2 * Math.PI);
+        tCtx.fillStyle = '#057a55';
+        tCtx.fill();
+        tCtx.strokeStyle = '#ffffff';
+        tCtx.lineWidth = 2;
+        tCtx.stroke();
+
+        tCtx.fillStyle = '#057a55';
+        tCtx.font = 'bold 11px sans-serif';
+        tCtx.textAlign = 'right';
+        tCtx.fillText(`نقطة التكافؤ (${Veq.toFixed(1)} cm³ , pH ${pHeq.toFixed(2)})`, xEq - 10, yEq - 8);
+
+        tCtx.fillStyle = '#057a55';
+        tCtx.font = 'bold 11px sans-serif';
+        tCtx.textAlign = 'center';
+        tCtx.fillText(`${Veq.toFixed(1)}`, xEq, h - pad.bottom + 32);
+
+        tCtx.textAlign = 'right';
+        tCtx.fillText(`${pHeq.toFixed(1)}`, pad.left - 6, yEq + 4);
+      }
+
+      // النقطة الحالية المتحركة
+      tCtx.beginPath();
+      tCtx.arc(toX(currentVAdded), toY(curPH), 5.5, 0, 2 * Math.PI);
+      tCtx.fillStyle = '#dc2626';
+      tCtx.fill();
+      tCtx.strokeStyle = '#ffffff';
+      tCtx.lineWidth = 2;
+      tCtx.stroke();
+    }
+
+    window.onload = () => {
+      resetTitration();
+    };
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>محاكي المعايرة ومنحنيات pH - مدرسة أبو عبيدة للبنين</title>
+  <title>مختبر المعايرة ومنحنيات pH - مدرسة أبو عبيدة للبنين</title>
   <style>
     :root {
       --primary: #1a56db;
@@ -11,33 +11,110 @@
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #1e293b;
+      --text-muted: #64748b;
       --border: #cbd5e1;
       --danger: #dc2626;
       --success: #057a55;
+      --warning: #d97706;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
+
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); margin: 0; padding: 10px; }
     
-    .header { text-align: center; margin-bottom: 8px; }
-    .header h1 { margin: 2px 0; color: var(--primary); font-size: 1.35rem; }
-    .header p { margin: 0; color: #64748b; font-size: 0.82rem; }
+    html, body {
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      padding: 5px 8px;
+      background-color: var(--bg);
+      color: var(--text);
+      user-select: none;
+    }
 
-    .container { max-width: 1480px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+    .app-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-width: 1700px;
+      margin: 0 auto;
+      position: relative;
+    }
 
-    /* الصف العلوي للإعدادات المستقلة */
-    .top-settings-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+    /* الشريط العلوي */
+    .compact-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      padding: 3px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      flex-shrink: 0;
+      height: 38px;
+    }
+    .header-titles {
+      display: flex;
+      align-items: center;
       gap: 10px;
     }
-    @media (max-width: 900px) {
-      .top-settings-row { grid-template-columns: 1fr; }
+    .header-titles h1 {
+      margin: 0;
+      font-size: 0.98rem;
+      color: var(--primary);
+      font-weight: 800;
+    }
+    .teacher-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, #1e40af, #1a56db);
+      color: #ffffff;
+      padding: 2px 10px;
+      border-radius: 16px;
+      font-size: 0.74rem;
+      font-weight: 700;
     }
 
+    .unit-switch-box {
+      display: inline-flex;
+      align-items: center;
+      background: #f1f5f9;
+      padding: 2px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      gap: 2px;
+    }
+    .unit-btn {
+      padding: 2px 7px;
+      font-size: 0.68rem;
+      font-weight: bold;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: #475569;
+      transition: all 0.15s;
+    }
+    .unit-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* صف الإعدادات */
+    .top-settings-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      flex-shrink: 0;
+    }
     .section-box {
-      border-radius: 9px;
-      padding: 10px 12px;
-      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 4px 8px;
+      border: 1.2px solid var(--border);
       background: var(--card-bg);
     }
     .setup-section { background: #f8fafc; border-color: #cbd5e1; }
@@ -45,180 +122,515 @@
     .base-section { background: #f0fdf4; border-color: #bbf7d0; }
 
     .section-title {
-      font-size: 0.88rem;
+      font-size: 0.74rem;
       font-weight: bold;
-      margin: 0 0 7px 0;
+      margin: 0 0 2px 0;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
     .setup-title { color: #1e40af; }
     .acid-title { color: #b91c1c; }
     .base-title { color: #15803d; }
 
-    .form-group { margin-bottom: 8px; }
-    label { display: block; font-weight: 600; margin-bottom: 3px; font-size: 0.78rem; color: #334155; }
+    .grid-fields-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+    .form-group { margin-bottom: 2px; }
+    label { display: block; font-weight: 600; margin-bottom: 1px; font-size: 0.67rem; color: #334155; }
     select, input[type="number"] {
       width: 100%;
-      padding: 6px 8px;
-      border: 1.2px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.84rem;
+      padding: 2px 5px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.72rem;
       background: #fff;
     }
     select:focus, input:focus { outline: none; border-color: var(--primary); }
 
-    /* الصف السفلي التفاعلي */
-    .bottom-interactive-row {
+    /* مساحة العمل */
+    .main-workspace {
+      flex: 1;
+      min-height: 0;
       display: grid;
-      grid-template-columns: 370px 1fr;
-      gap: 12px;
+      grid-template-columns: 200px 355px 1fr;
+      gap: 6px;
       align-items: stretch;
-    }
-    @media (max-width: 990px) {
-      .bottom-interactive-row { grid-template-columns: 1fr; }
+      position: relative;
     }
 
-    .control-card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 12px;
-      border: 1.5px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .chart-card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 10px;
-      border: 1.5px solid var(--border);
+    /* 1. المنصة المعملية */
+    .lab-card {
+      background: radial-gradient(circle at center, #1e293b 0%, #0b1120 100%);
+      border: 1.2px solid #334155;
+      border-radius: 8px;
+      padding: 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+      position: relative;
+      color: #fff;
+      overflow: hidden;
     }
 
-    .chart-teacher-banner {
-      width: 100%;
-      max-width: 860px;
-      background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
-      color: #ffffff;
-      padding: 7px 16px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: bold;
+    .ph-meter-mini {
+      background: #000;
+      border: 1.2px solid #475569;
+      border-radius: 5px;
+      padding: 2px 6px;
       text-align: center;
-      box-shadow: 0 3px 10px rgba(30, 58, 138, 0.3);
-      margin-bottom: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      letter-spacing: 0.3px;
+      width: 92%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .ph-screen {
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #34d399;
+      letter-spacing: 1px;
+    }
+    .ph-sub { font-size: 0.55rem; color: #94a3b8; font-weight: 700; }
+
+    .rig-container {
+      position: relative;
+      width: 150px;
+      height: 275px;
+      margin: 2px 0;
+    }
+    .stand-base {
+      position: absolute;
+      bottom: 3px;
+      left: 6px;
+      width: 95px;
+      height: 7px;
+      background: #64748b;
+      border-radius: 2px;
+    }
+    .stand-pole {
+      position: absolute;
+      bottom: 10px;
+      left: 22px;
+      width: 6px;
+      height: 255px;
+      background: linear-gradient(to right, #94a3b8, #e2e8f0, #64748b);
+      border-radius: 2px;
+    }
+    .stand-clamp {
+      position: absolute;
+      top: 50px;
+      left: 24px;
+      width: 46px;
+      height: 5px;
+      background: #475569;
+      border-radius: 2px;
+      z-index: 2;
     }
 
-    .canvas-wrapper {
-      width: 100%;
-      max-width: 860px;
-      height: 480px;
+    .burette-tube {
+      position: absolute;
+      top: 10px;
+      left: 65px;
+      width: 15px;
+      height: 140px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.2px solid rgba(255, 255, 255, 0.45);
+      border-radius: 3px 3px 2px 2px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column-reverse;
+      z-index: 3;
     }
-    canvas {
+    .burette-liquid {
       width: 100%;
       height: 100%;
+      background: linear-gradient(to top, rgba(56, 189, 248, 0.8), rgba(14, 165, 233, 0.5));
+      transition: height 0.1s linear;
+    }
+    .burette-ticks {
+      position: absolute;
+      top: 0; right: 0; width: 4px; height: 100%;
+      background: repeating-linear-gradient(to bottom, #cbd5e1 0px, #cbd5e1 1px, transparent 1px, transparent 7px);
+      opacity: 0.6;
+    }
+    .stopcock {
+      position: absolute;
+      top: 150px;
+      left: 67px;
+      width: 11px;
+      height: 6px;
+      background: #ef4444;
+      border-radius: 2px;
+      cursor: pointer;
+      z-index: 4;
+      transition: transform 0.2s;
+    }
+    .stopcock.open { transform: rotate(90deg); background: #10b981; }
+    .burette-tip {
+      position: absolute;
+      top: 156px;
+      left: 70px;
+      width: 5px;
+      height: 15px;
+      background: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 0 0 2px 2px;
+      z-index: 3;
+    }
+
+    /* قطرة سحاحة واضحة ومضيئة */
+    .droplet {
+      position: absolute;
+      top: 171px;
+      left: 68.5px;
+      width: 8px;
+      height: 13px;
+      background: radial-gradient(circle at 35% 30%, #ffffff, #38bdf8 50%, #0284c7 100%);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 1), 0 0 3px #ffffff;
+      opacity: 0;
+      z-index: 20;
+      pointer-events: none;
+    }
+    .droplet.falling { 
+      animation: drop-fall 0.35s cubic-bezier(0.4, 0, 0.7, 1); 
+    }
+    @keyframes drop-fall {
+      0% { 
+        top: 171px; 
+        opacity: 1; 
+        transform: scale(0.9); 
+      }
+      80% {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+      100% { 
+        top: 218px; 
+        opacity: 0; 
+        transform: scale(1.4, 0.5); 
+      }
+    }
+
+    .flask-container {
+      position: absolute;
+      bottom: 18px;
+      left: 42px;
+      width: 66px;
+      height: 80px;
+      z-index: 2;
+    }
+    .flask-svg { width: 100%; height: 100%; overflow: visible; }
+    .flask-glass {
+      fill: rgba(255, 255, 255, 0.05);
+      stroke: rgba(255, 255, 255, 0.65);
+      stroke-width: 2.2;
+      stroke-linejoin: round;
+    }
+    .flask-liquid-layer {
+      transition: fill 0.25s ease, y 0.2s ease, height 0.2s ease;
+    }
+    .stirrer-base {
+      position: absolute;
+      bottom: 4px;
+      left: 34px;
+      width: 82px;
+      height: 13px;
+      background: #1e293b;
+      border: 1px solid #475569;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 4px;
+    }
+    .stirrer-led {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 4px #10b981;
+    }
+
+    /* 2. بطاقة التحكم والجدول */
+    .control-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 6px 8px;
+      border: 1.2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow: hidden;
+      min-height: 0;
     }
 
     .live-ph-display {
       text-align: center;
-      font-size: 1.6rem;
+      font-size: 1.25rem;
       font-weight: 800;
       color: var(--primary);
-      margin: 4px 0 8px 0;
       background: #eff6ff;
-      padding: 6px;
-      border-radius: 8px;
+      padding: 3px;
+      border-radius: 5px;
       border: 1px solid #bfdbfe;
+      flex-shrink: 0;
     }
 
     .btn-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 5px;
-      margin-bottom: 8px;
+      gap: 3px;
+      flex-shrink: 0;
     }
     button {
-      padding: 8px 4px;
+      padding: 4px 2px;
       border: none;
-      border-radius: 6px;
+      border-radius: 4px;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.2s;
-      font-size: 0.8rem;
+      transition: 0.15s;
+      font-size: 0.68rem;
     }
     .btn-add { background: #0e9f6e; color: #fff; }
     .btn-add:hover { background: var(--success); }
     .btn-sub { background: #e02424; color: #fff; }
     .btn-sub:hover { background: var(--danger); }
-    .btn-action { background: var(--primary); color: #fff; grid-column: span 2; padding: 9px; }
+    .btn-action { background: var(--primary); color: #fff; grid-column: span 2; padding: 5px; }
+    .btn-action:hover { background: var(--primary-dark); }
     .btn-reset { background: #f1f5f9; color: #334155; border: 1px solid var(--border); grid-column: span 2; }
 
     .slider-box {
       background: #f8fafc;
-      padding: 8px;
-      border-radius: 8px;
+      padding: 3px 5px;
+      border-radius: 5px;
       border: 1px dashed var(--border);
-      margin-bottom: 8px;
+      flex-shrink: 0;
     }
-    .slider-box label { font-size: 0.78rem; font-weight: bold; color: #1e293b; }
-    .slider-box input[type="range"] { width: 100%; margin-top: 3px; }
+    .slider-box label { font-size: 0.66rem; font-weight: bold; display: flex; justify-content: space-between; }
+    .slider-box input[type="range"] { width: 100%; margin-top: 1px; }
 
-    .indicator-box {
-      padding: 7px;
-      border-radius: 7px;
-      font-size: 0.78rem;
-      text-align: center;
+    .dropdown-container {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .select-points {
+      width: 100%;
+      background: #f0fdfa;
+      border: 1.2px solid #0d9488;
       font-weight: bold;
-      margin-bottom: 8px;
+      color: #0f172a;
+      padding: 3px 5px;
+      font-size: 0.7rem;
+      border-radius: 4px;
     }
 
-    .data-table {
+    .table-container-compact {
+      flex: 1;
+      min-height: 0;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      overflow-y: auto;
+      background: #ffffff;
+      margin-top: 2px;
+    }
+    .compact-vh-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.82rem;
+      font-size: 0.68rem;
+      text-align: center;
     }
-    .data-table th, .data-table td {
-      border: 1px solid #e2e8f0;
-      padding: 6px 8px;
-      text-align: right;
+    .compact-vh-table th {
+      position: sticky;
+      top: 0;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 3px 4px;
+      border-bottom: 1.5px solid #cbd5e1;
+      font-weight: 700;
+      z-index: 2;
     }
-    .data-table th { background: #f1f5f9; color: #475569; }
+    .compact-vh-table td {
+      padding: 2.5px 4px;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+    }
+    .compact-vh-table tr:hover { background-color: #f8fafc; }
+    .compact-vh-table tr.active-row {
+      background-color: #dbeafe !important;
+      font-weight: bold;
+      color: #1e40af;
+    }
+    .compact-vh-table tr.eq-row {
+      background-color: #ecfdf5;
+      font-weight: bold;
+      color: #065f46;
+    }
+    .compact-vh-table tr.eq-row.active-row {
+      background-color: #a7f3d0 !important;
+      color: #064e3b;
+    }
+
+    .indicator-box {
+      padding: 3px 5px;
+      border-radius: 4px;
+      font-size: 0.64rem;
+      text-align: center;
+      font-weight: bold;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    /* 3. بطاقة الرسم البياني وأدوات القلم */
+    .chart-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 5px 8px;
+      border: 1.2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      min-height: 0;
+    }
+
+    /* شريط أدوات القلم: معزول في طبقة عليا جداً 200000 لضمان اللمس الفوري */
+    .pen-toolbar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-bottom: 3px;
+      border: 1.5px solid #94a3b8;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 200000 !important;
+      pointer-events: auto !important;
+    }
+    .pen-tools-group { 
+      display: flex; 
+      align-items: center; 
+      gap: 4px; 
+      pointer-events: auto !important;
+    }
+    .pen-btn {
+      padding: 4px 9px;
+      font-size: 0.72rem;
+      border-radius: 5px;
+      border: 1.2px solid #cbd5e1;
+      background: #f8fafc;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      pointer-events: auto !important;
+    }
+    .pen-btn.active {
+      background: var(--primary) !important;
+      color: #fff !important;
+      border-color: var(--primary-dark) !important;
+      box-shadow: 0 0 4px rgba(26, 86, 219, 0.45);
+    }
+    .color-picker-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 0 3px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease;
+      pointer-events: auto !important;
+    }
+    .color-picker-dot.selected { transform: scale(1.3); border-color: #0f172a; }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+    .canvas-wrapper canvas {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+    }
+
+    /* لوحة الرسم الشاملة: تغطي كامل نافذة التطبيق بالكامل تحت شريط الأدوات مباشرة */
+    #fullScreenDrawingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 100000;
+      pointer-events: none; /* معطل افتراضياً ليتحكم المستخدم باللمس والتصفح */
+      touch-action: none;
+    }
+    #fullScreenDrawingOverlay.drawing-mode {
+      pointer-events: auto;
+      cursor: crosshair;
+    }
+    #fullScreenDrawingOverlay.eraser-mode {
+      pointer-events: auto;
+      cursor: cell;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="header">
-      <h1>مختبر المعايرة المتقدم ومنحنيات الرقم الهيدروجيني (pH)</h1>
-      <p>محاكاة دقيقة لحسابات المعايرة وكواشف كتاب الكيمياء المعتمدة لمنهج كامبريدج</p>
+  <!-- لوحة الرسم التفاعلية التي تغطي كامل الشاشة مع بقاء الأزرار في طبقة عليا فوقها -->
+  <canvas id="fullScreenDrawingOverlay"></canvas>
+
+  <div class="app-container">
+    
+    <!-- الشريط العلوي -->
+    <div class="compact-header">
+      <div class="header-titles">
+        <div class="teacher-badge">
+          <span>🧪 إعداد: مدرسة أبو عبيدة للبنين</span>
+        </div>
+        <h1>مختبر المعايرة ومنحنيات الرقم الهيدروجيني (pH)</h1>
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: #475569; font-weight: bold;">
+        <div class="unit-switch-box" title="تبديل وحدة قياس الحجم">
+          <span style="font-size: 0.65rem; padding: 0 3px; color:#64748b;">الوحدة:</span>
+          <button id="btnUnitCm3" class="unit-btn active" onclick="setVolumeUnit('cm³')">cm³</button>
+          <button id="btnUnitMl" class="unit-btn" onclick="setVolumeUnit('mL')">mL</button>
+        </div>
+        <div>
+          الحجم المضاف: <span id="hdrV" style="color:var(--primary);">0.0 cm³</span> | pH الحالية: <span id="hdrPH" style="color:#057a55;">1.00</span>
+        </div>
+      </div>
     </div>
 
-    <!-- الصف العلوي للإعدادات -->
+    <!-- صف الإعدادات الثلاثي -->
     <div class="top-settings-row">
-      <!-- 1. إعداد نظام التوزيع والدليل -->
       <div class="section-box setup-section">
         <div class="section-title setup-title">⚙️ نظام المعايرة والكاشف</div>
-        <div class="form-group">
-          <label>طبيعة المعايرة (التوزيع):</label>
-          <select id="setupMode" onchange="resetTitration()">
-            <option value="ACID_IN_FLASK" selected>الحمض في الدورق (القاعدة في السحاحة)</option>
-            <option value="BASE_IN_FLASK">القاعدة في الدورق (الحمض في السحاحة)</option>
-          </select>
+        <div class="grid-fields-2">
+          <div class="form-group">
+            <label>طبيعة المعايرة:</label>
+            <select id="setupMode" onchange="resetTitration()">
+              <option value="ACID_IN_FLASK" selected>حمض بالدورق / قاعدة بالسحاحة</option>
+              <option value="BASE_IN_FLASK">قاعدة بالدورق / حمض بالسحاحة</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>حجم الدورق (<span class="unit-label">cm³</span>):</label>
+            <input type="number" id="volFlask" value="25.0" step="1" min="5" onchange="resetTitration()">
+          </div>
         </div>
-        <div class="form-group">
-          <label>حجم محلول الدورق المخروطي (cm³):</label>
-          <input type="number" id="volFlask" value="25.0" step="1" min="5" onchange="resetTitration()">
-        </div>
-        <div class="form-group">
-          <label>الكاشف (الدليل) من الكتاب المدرسي:</label>
-          <select id="indicator" onchange="drawGraph(); updateInfo();">
+        <div class="form-group" style="margin-top:1px;">
+          <label>الكاشف المدرسي:</label>
+          <select id="indicator" onchange="drawGraph(); updateInfo(); renderApparatus();">
             <option value="phenolphthalein">الفينولفثالين (8.2 - 10.0)</option>
             <option value="methyl_orange">الميثيل البرتقالي (3.1 - 4.4)</option>
             <option value="bromothymol_blue">بروموثيمول الأزرق (6.0 - 7.6)</option>
@@ -229,16 +641,23 @@
         </div>
       </div>
 
-      <!-- 2. أيقونة الحمض المدمجة والمستقلة -->
       <div class="section-box acid-section">
         <div class="section-title acid-title">🧪 إعدادات الحمض (مستقل)</div>
-        <div class="form-group">
-          <label>نوع وقوة وتكافؤ الحمض:</label>
-          <select id="acidCombo" onchange="resetTitration()">
-            <option value="STRONG_1" selected>حمض قوي أحادي البروتون (مثل HCl, HNO₃)</option>
-            <option value="STRONG_2">حمض قوي ثنائي البروتون (مثل H₂SO₄)</option>
-            <option value="WEAK_1">حمض ضعيف أحادي البروتون (مثل CH₃COOH)</option>
-          </select>
+        <div class="grid-fields-2">
+          <div class="form-group">
+            <label>قوة الحمض:</label>
+            <select id="acidType" onchange="resetTitration()">
+              <option value="STRONG">حمض قوي (HCl, HNO₃)</option>
+              <option value="WEAK">حمض ضعيف (CH₃COOH)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>البروتونات (H⁺):</label>
+            <select id="acidBasicity" onchange="resetTitration()">
+              <option value="1">أحادي (1) مثل HCl</option>
+              <option value="2">ثنائي (2) مثل H₂SO₄</option>
+            </select>
+          </div>
         </div>
         <div class="form-group">
           <label>تركيز الحمض (mol/dm³):</label>
@@ -246,16 +665,23 @@
         </div>
       </div>
 
-      <!-- 3. أيقونة القاعدة المدمجة والمستقلة -->
       <div class="section-box base-section">
         <div class="section-title base-title">🧼 إعدادات القاعدة (مستقل)</div>
-        <div class="form-group">
-          <label>نوع وقوة وتكافؤ القاعدة:</label>
-          <select id="baseCombo" onchange="resetTitration()">
-            <option value="STRONG_1" selected>قاعدة قوية أحادية الهيدروكسيد (مثل NaOH, KOH)</option>
-            <option value="STRONG_2">قاعدة قوية ثنائية الهيدروكسيد (مثل Ba(OH)₂, Ca(OH)₂)</option>
-            <option value="WEAK_1">قاعدة ضعيفة أحادية الهيدروكسيد (مثل NH₃)</option>
-          </select>
+        <div class="grid-fields-2">
+          <div class="form-group">
+            <label>قوة القاعدة:</label>
+            <select id="baseType" onchange="resetTitration()">
+              <option value="STRONG">قاعدة قوية (NaOH, KOH)</option>
+              <option value="WEAK">قاعدة ضعيفة (NH₃)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>الهيدروكسيد (OH⁻):</label>
+            <select id="baseAcidity" onchange="resetTitration()">
+              <option value="1">أحادية (1) مثل NaOH</option>
+              <option value="2">ثنائية (2) مثل Ba(OH)₂</option>
+            </select>
+          </div>
         </div>
         <div class="form-group">
           <label>تركيز القاعدة (mol/dm³):</label>
@@ -264,49 +690,131 @@
       </div>
     </div>
 
-    <!-- الصف السفلي التفاعلي -->
-    <div class="bottom-interactive-row">
+    <!-- مساحة العمل الثلاثية -->
+    <div class="main-workspace">
+      
+      <!-- 1. المنصة المعملية -->
+      <div class="lab-card">
+        <div class="ph-meter-mini">
+          <div class="ph-sub">DIGITAL pH METER</div>
+          <div class="ph-screen" id="apparatusPH">1.00</div>
+        </div>
+
+        <div class="rig-container">
+          <div class="stand-base"></div>
+          <div class="stand-pole"></div>
+          <div class="stand-clamp"></div>
+
+          <!-- السحاحة -->
+          <div class="burette-tube">
+            <div class="burette-ticks"></div>
+            <div class="burette-liquid" id="buretteLiquid"></div>
+          </div>
+          <div class="stopcock" id="stopcock" title="محبس السحاحة (انقر للتشغيل/الإيقاف)" onclick="toggleAutoRun()"></div>
+          <div class="burette-tip"></div>
+          
+          <!-- قطرة السحاحة الواضحة والمضيئة -->
+          <div class="droplet" id="droplet"></div>
+
+          <!-- الدورق المخروطي -->
+          <div class="flask-container">
+            <svg class="flask-svg" viewBox="0 0 100 120">
+              <defs>
+                <clipPath id="flaskClip">
+                  <polygon points="36,0 64,0 64,28 95,108 95,116 5,116 5,108 36,28" />
+                </clipPath>
+              </defs>
+              <g clip-path="url(#flaskClip)">
+                <rect id="flaskLiquid" class="flask-liquid-layer" x="0" y="65" width="100" height="55" fill="#f1f5f9" />
+                <rect id="stirrerBar" x="42" y="110" width="16" height="4" rx="2" fill="#ffffff" opacity="0.85"/>
+              </g>
+              <polygon class="flask-glass" points="36,0 64,0 64,28 95,108 95,116 5,116 5,108 36,28" />
+              <line x1="32" y1="0" x2="68" y2="0" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" />
+            </svg>
+          </div>
+
+          <!-- قاعدة التحريك المغناطيسي -->
+          <div class="stirrer-base">
+            <div class="stirrer-led"></div>
+            <span style="font-size: 0.48rem; color: #94a3b8; font-weight:700;">MAGNETIC STIRRER</span>
+          </div>
+        </div>
+
+        <div style="font-size: 0.65rem; color: #94a3b8; text-align: center;">
+          المحلول بالدورق: <span id="flaskSolName" style="color:#38bdf8; font-weight: bold;">حمض</span>
+        </div>
+      </div>
+
+      <!-- 2. بطاقة التحكم والجدول -->
       <div class="control-card">
-        <div>
-          <div class="live-ph-display" id="livePHDisplay">pH = 0.00</div>
+        <div class="live-ph-display" id="livePHDisplay">pH = 1.00</div>
 
-          <div class="btn-grid">
-            <button class="btn-sub" onclick="stepVolume(-0.5)">- 0.5 cm³</button>
-            <button class="btn-sub" onclick="stepVolume(-0.1)">- 0.1 cm³</button>
-            <button class="btn-add" onclick="stepVolume(+0.1)">+ 0.1 cm³</button>
-            <button class="btn-add" onclick="stepVolume(+0.5)">+ 0.5 cm³</button>
+        <div class="btn-grid">
+          <button class="btn-sub" onclick="stepVolume(-0.5)">- 0.5 <span class="unit-label">cm³</span></button>
+          <button class="btn-sub" onclick="stepVolume(-0.1)">- 0.1 <span class="unit-label">cm³</span></button>
+          <button class="btn-add" onclick="stepVolume(+0.1)">+ 0.1 <span class="unit-label">cm³</span></button>
+          <button class="btn-add" onclick="stepVolume(+0.5)">+ 0.5 <span class="unit-label">cm³</span></button>
 
-            <button class="btn-action" id="autoBtn" onclick="toggleAutoRun()">تشغيل المحاكاة المستمرة</button>
-            <button class="btn-reset" onclick="resetTitration()">إعادة ضبط</button>
-          </div>
-
-          <div class="slider-box">
-            <label id="sliderLabel">الحجم المضاف: 0.0 cm³</label>
-            <input type="range" id="volSlider" min="0" max="60" step="0.1" value="0" oninput="onSliderMove(this.value)">
-          </div>
-
-          <div id="indicatorPanel" class="indicator-box"></div>
+          <button class="btn-action" id="autoBtn" onclick="toggleAutoRun()">تشغيل المحاكاة المستمرة</button>
+          <button class="btn-reset" onclick="resetTitration()">إعادة ضبط</button>
         </div>
 
-        <table class="data-table">
-          <tbody>
-            <tr><th>الحجم المضاف حالياً</th><td id="tblVAdded">0.0 cm³</td></tr>
-            <tr><th>حجم نقطة التكافؤ (V_eq)</th><td id="tblVeq" style="color: #057a55; font-weight: bold;">25.0 cm³</td></tr>
-            <tr><th>pH نقطة التكافؤ (pH_eq)</th><td id="tblPHeq" style="color: #057a55; font-weight: bold;">pH ≈ 7.00</td></tr>
-            <tr><th>لون الكاشف الفعلي الآن</th><td id="tblIndColor">-</td></tr>
-          </tbody>
-        </table>
+        <div class="slider-box">
+          <label id="sliderLabel">
+            <span>الحجم المضاف:</span>
+            <span id="sliderValDisplay" style="color:var(--primary);">0.0 cm³</span>
+          </label>
+          <input type="range" id="volSlider" min="0" max="60" step="0.1" value="0" oninput="onSliderMove(this.value)">
+        </div>
+
+        <div class="dropdown-container">
+          <select id="pointsDropdown" class="select-points" onchange="onSelectDropdownPoint(this.value)">
+          </select>
+        </div>
+
+        <div class="table-container-compact">
+          <table class="compact-vh-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>الحجم المضاف V (<span class="unit-label">cm³</span>)</th>
+                <th>الرقم الهيدروجيني (pH)</th>
+                <th>المرحلة التجريبية</th>
+              </tr>
+            </thead>
+            <tbody id="vhTableBody">
+            </tbody>
+          </table>
+        </div>
+
+        <div id="indicatorPanel" class="indicator-box"></div>
       </div>
 
-      <!-- بطاقة الرسم البياني مع الشعار المظلل في أعلاها -->
+      <!-- 3. بطاقة الرسم البياني وأدوات القلم -->
       <div class="chart-card">
-        <div class="chart-teacher-banner">
-          🔬 إعداد: معلمو الكيمياء بمدرسة أبو عبيدة للبنين
+        
+        <!-- شريط أدوات القلم: مرتفع فوق طبقة الرسم ويستجيب بنسبة 100% -->
+        <div class="pen-toolbar">
+          <div class="pen-tools-group">
+            <button id="btnTouch" class="pen-btn active" onclick="setScreenMode('TOUCH')">👆 تحريك وتصفح</button>
+            <button id="btnPen" class="pen-btn" onclick="togglePenMode()">🖊️ قلم الشرح</button>
+            <button id="btnEraser" class="pen-btn" onclick="setScreenMode('ERASER')">🧹 ممحاة</button>
+            <button class="pen-btn" onclick="clearDrawnCanvas()">🗑️ مسح الكل</button>
+          </div>
+          <div class="pen-tools-group">
+            <span style="font-size:0.65rem; color:#475569;">اللون:</span>
+            <div class="color-picker-dot selected" style="background:#dc2626;" onclick="selectPenColor('#dc2626', this)"></div>
+            <div class="color-picker-dot" style="background:#2563eb;" onclick="selectPenColor('#2563eb', this)"></div>
+            <div class="color-picker-dot" style="background:#16a34a;" onclick="selectPenColor('#16a34a', this)"></div>
+            <div class="color-picker-dot" style="background:#eab308;" onclick="selectPenColor('#eab308', this)"></div>
+          </div>
         </div>
+
         <div class="canvas-wrapper">
-          <canvas id="titrationCanvas" width="860" height="480"></canvas>
+          <canvas id="titrationCanvas"></canvas>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -315,37 +823,108 @@
     const Ka_CH3COOH = 1.74e-5;
     const Kb_NH3 = 1.78e-5;
 
+    let currentUnit = 'cm³';
     let currentVAdded = 0.0;
     let maxVLimit = 60.0;
     let isAutoRunning = false;
     let timer = null;
+    let stirAngle = 0;
 
     const tCanvas = document.getElementById('titrationCanvas');
     const tCtx = tCanvas.getContext('2d');
 
+    const overlayCanvas = document.getElementById('fullScreenDrawingOverlay');
+    const overlayCtx = overlayCanvas.getContext('2d');
+
     const indicators = {
-      phenolphthalein: { name: 'الفينولفثالين', min: 8.2, max: 10.0, color: 'rgba(236, 72, 153, 0.16)', stroke: '#db2777', acidCol: 'عديم اللون (شفاف)', baseCol: 'وردي / قرمزي' },
-      methyl_orange: { name: 'الميثيل البرتقالي', min: 3.1, max: 4.4, color: 'rgba(249, 115, 22, 0.16)', stroke: '#ea580c', acidCol: 'أحمر', baseCol: 'أصفر' },
-      bromothymol_blue: { name: 'بروموثيمول الأزرق', min: 6.0, max: 7.6, color: 'rgba(59, 130, 246, 0.16)', stroke: '#2563eb', acidCol: 'أصفر', baseCol: 'أزرق' },
-      methyl_red: { name: 'الميثيل الأحمر', min: 4.4, max: 6.2, color: 'rgba(239, 68, 68, 0.16)', stroke: '#dc2626', acidCol: 'أحمر', baseCol: 'أصفر' },
-      bromocresol_green: { name: 'بروموكريسول الأخضر', min: 3.8, max: 5.4, color: 'rgba(16, 185, 129, 0.16)', stroke: '#059669', acidCol: 'أصفر', baseCol: 'أزرق مخضر' },
-      thymolphthalein: { name: 'الثيمولفثالين', min: 9.3, max: 10.5, color: 'rgba(99, 102, 241, 0.16)', stroke: '#4f46e5', acidCol: 'عديم اللون', baseCol: 'أزرق' }
+      phenolphthalein: {
+        name: 'الفينولفثالين', min: 8.2, max: 10.0,
+        color: 'rgba(236, 72, 153, 0.16)', stroke: '#db2777',
+        acidCol: 'عديم اللون (شفاف)', baseCol: 'وردي داكن',
+        getHex: (ph) => {
+          if (ph < 8.2) return 'rgba(241, 245, 249, 0.3)';
+          if (ph > 10.0) return 'rgba(219, 39, 119, 0.85)';
+          const t = (ph - 8.2) / 1.8;
+          return `rgba(244, 114, 182, ${0.25 + t * 0.55})`;
+        }
+      },
+      methyl_orange: {
+        name: 'الميثيل البرتقالي', min: 3.1, max: 4.4,
+        color: 'rgba(249, 115, 22, 0.16)', stroke: '#ea580c',
+        acidCol: 'أحمر', baseCol: 'أصفر',
+        getHex: (ph) => {
+          if (ph < 3.1) return 'rgba(239, 68, 68, 0.85)';
+          if (ph > 4.4) return 'rgba(234, 179, 8, 0.85)';
+          return 'rgba(249, 115, 22, 0.85)';
+        }
+      },
+      bromothymol_blue: {
+        name: 'بروموثيمول الأزرق', min: 6.0, max: 7.6,
+        color: 'rgba(59, 130, 246, 0.16)', stroke: '#2563eb',
+        acidCol: 'أصفر', baseCol: 'أزرق',
+        getHex: (ph) => {
+          if (ph < 6.0) return 'rgba(234, 179, 8, 0.85)';
+          if (ph > 7.6) return 'rgba(37, 99, 235, 0.85)';
+          return 'rgba(16, 185, 129, 0.85)';
+        }
+      },
+      methyl_red: {
+        name: 'الميثيل الأحمر', min: 4.4, max: 6.2,
+        color: 'rgba(239, 68, 68, 0.16)', stroke: '#dc2626',
+        acidCol: 'أحمر', baseCol: 'أصفر',
+        getHex: (ph) => {
+          if (ph < 4.4) return 'rgba(239, 68, 68, 0.85)';
+          if (ph > 6.2) return 'rgba(234, 179, 8, 0.85)';
+          return 'rgba(249, 115, 22, 0.85)';
+        }
+      },
+      bromocresol_green: {
+        name: 'بروموكريسول الأخضر', min: 3.8, max: 5.4,
+        color: 'rgba(16, 185, 129, 0.16)', stroke: '#059669',
+        acidCol: 'أصفر', baseCol: 'أزرق مخضر',
+        getHex: (ph) => {
+          if (ph < 3.8) return 'rgba(234, 179, 8, 0.85)';
+          if (ph > 5.4) return 'rgba(14, 165, 233, 0.85)';
+          return 'rgba(16, 185, 129, 0.85)';
+        }
+      },
+      thymolphthalein: {
+        name: 'الثيمولفثالين', min: 9.3, max: 10.5,
+        color: 'rgba(99, 102, 241, 0.16)', stroke: '#4f46e5',
+        acidCol: 'عديم اللون', baseCol: 'أزرق',
+        getHex: (ph) => {
+          if (ph < 9.3) return 'rgba(241, 245, 249, 0.3)';
+          if (ph > 10.5) return 'rgba(37, 99, 235, 0.85)';
+          return 'rgba(147, 197, 253, 0.7)';
+        }
+      }
     };
+
+    function setVolumeUnit(unit) {
+      currentUnit = unit;
+      document.getElementById('btnUnitCm3').classList.toggle('active', unit === 'cm³');
+      document.getElementById('btnUnitMl').classList.toggle('active', unit === 'mL');
+      
+      document.querySelectorAll('.unit-label').forEach(el => {
+        el.textContent = unit;
+      });
+
+      updateInfo();
+      populateDropdownAndTable();
+      drawGraph();
+    }
 
     function getSystemConfiguration() {
       const mode = document.getElementById('setupMode').value;
-      const acidVal = document.getElementById('acidCombo').value;
-      const baseVal = document.getElementById('baseCombo').value;
+      const acidType = document.getElementById('acidType').value;
+      const acidBasicity = parseInt(document.getElementById('acidBasicity').value);
+      const acidConc = parseFloat(document.getElementById('acidConc').value);
 
-      let acidType = acidVal.startsWith('STRONG') ? 'STRONG' : 'WEAK';
-      let acidBasicity = parseInt(acidVal.split('_')[1]);
-      let acidConc = parseFloat(document.getElementById('acidConc').value);
+      const baseType = document.getElementById('baseType').value;
+      const baseAcidity = parseInt(document.getElementById('baseAcidity').value);
+      const baseConc = parseFloat(document.getElementById('baseConc').value);
 
-      let baseType = baseVal.startsWith('STRONG') ? 'STRONG' : 'WEAK';
-      let baseAcidity = parseInt(baseVal.split('_')[1]);
-      let baseConc = parseFloat(document.getElementById('baseConc').value);
-
-      let volFlask = parseFloat(document.getElementById('volFlask').value);
+      const volFlask = parseFloat(document.getElementById('volFlask').value);
 
       let Ca, na, Va, Cb, nb, typeCode;
 
@@ -485,110 +1064,297 @@
       slider.value = 0;
 
       updateInfo();
-      drawGraph();
+      renderApparatus();
+      populateDropdownAndTable();
+      resizeAndDrawGraph();
+    }
+
+    function triggerDroplet() {
+      const drop = document.getElementById('droplet');
+      drop.classList.remove('falling');
+      void drop.offsetWidth;
+      drop.classList.add('falling');
     }
 
     function stepVolume(delta) {
       currentVAdded = Math.max(0, Math.min(maxVLimit, currentVAdded + delta));
       document.getElementById('volSlider').value = currentVAdded;
+      if (delta > 0) triggerDroplet();
       updateInfo();
+      renderApparatus();
       drawGraph();
+      syncUIWithCurrentV();
     }
 
     function onSliderMove(val) {
+      const oldV = currentVAdded;
       currentVAdded = parseFloat(val);
+      if (currentVAdded > oldV) triggerDroplet();
       updateInfo();
+      renderApparatus();
       drawGraph();
+      syncUIWithCurrentV();
     }
 
     function toggleAutoRun() {
       const btn = document.getElementById('autoBtn');
+      const stopcock = document.getElementById('stopcock');
       if (!isAutoRunning) {
         isAutoRunning = true;
         btn.innerText = "إيقاف مؤقت";
         btn.style.background = "#dc2626";
+        stopcock.classList.add('open');
         timer = setInterval(() => {
           if (currentVAdded >= maxVLimit) {
             toggleAutoRun();
             return;
           }
           stepVolume(0.2);
-        }, 50);
+        }, 60);
       } else {
         isAutoRunning = false;
         clearInterval(timer);
         btn.innerText = "تشغيل المحاكاة المستمرة";
         btn.style.background = "var(--primary)";
+        stopcock.classList.remove('open');
       }
     }
+
+    function renderApparatus() {
+      const curPH = calculatePHAt(currentVAdded);
+      const indKey = document.getElementById('indicator').value;
+      const ind = indicators[indKey];
+
+      document.getElementById('apparatusPH').innerText = curPH.toFixed(2);
+
+      const bPct = Math.max(0, 100 - (currentVAdded / maxVLimit) * 100);
+      document.getElementById('buretteLiquid').style.height = `${bPct}%`;
+
+      const flaskLiq = document.getElementById('flaskLiquid');
+      flaskLiq.setAttribute('fill', ind.getHex(curPH));
+
+      const addedH = Math.min(18, (currentVAdded / maxVLimit) * 14);
+      flaskLiq.setAttribute('y', 65 - addedH);
+      flaskLiq.setAttribute('height', 55 + addedH);
+
+      const sys = getSystemConfiguration();
+      document.getElementById('flaskSolName').innerText = sys.mode === "ACID_IN_FLASK" ? "حمض في الدورق" : "قاعدة في الدورق";
+    }
+
+    setInterval(() => {
+      stirAngle = (stirAngle + 35) % 360;
+      const bar = document.getElementById('stirrerBar');
+      if (bar) bar.setAttribute('transform', `rotate(${stirAngle} 50 112)`);
+    }, 40);
 
     function updateInfo() {
       const sys = getSystemConfiguration();
       const Veq = getVeq();
-      const pHeq = calculatePHAt(Veq);
       const curPH = calculatePHAt(currentVAdded);
       const indKey = document.getElementById('indicator').value;
       const ind = indicators[indKey];
 
       document.getElementById('livePHDisplay').innerText = `pH = ${curPH.toFixed(2)}`;
-      document.getElementById('sliderLabel').innerText = `الحجم المضاف: ${currentVAdded.toFixed(1)} cm³`;
-
-      document.getElementById('tblVAdded').innerText = `${currentVAdded.toFixed(1)} cm³`;
-      document.getElementById('tblVeq').innerText = `${Veq.toFixed(2)} cm³`;
-      document.getElementById('tblPHeq').innerText = `pH ≈ ${pHeq.toFixed(2)}`;
+      document.getElementById('sliderValDisplay').innerText = `${currentVAdded.toFixed(1)} ${currentUnit}`;
+      document.getElementById('hdrV').innerText = `${currentVAdded.toFixed(1)} ${currentUnit}`;
+      document.getElementById('hdrPH').innerText = curPH.toFixed(2);
 
       let currentColor = "";
       if (curPH < ind.min) currentColor = ind.acidCol;
       else if (curPH > ind.max) currentColor = ind.baseCol;
-      else currentColor = "منطقة التحول اللوني (نقطة النهاية)";
-      document.getElementById('tblIndColor').innerText = currentColor;
+      else currentColor = "نقطة النهاية (تحول لوني)";
 
       let suitable = false;
-      let note = "";
       if (sys.typeCode === 'SA_SB' || sys.typeCode === 'SB_SA') {
         suitable = true;
-        note = "مناسب جداً؛ القفزة الرأسية واسعة وتغطي مدى الدليل بالكامل.";
       } else if (sys.typeCode === 'WA_SB' || sys.typeCode === 'SB_WA') {
-        if (['phenolphthalein', 'thymolphthalein'].includes(indKey)) {
-          suitable = true;
-          note = "مناسب جداً؛ القفزة الرأسية تقع في النطاق القاعدي ومدى الدليل يقع ضمنها.";
-        } else {
-          suitable = false;
-          note = "غير مناسب؛ يتغير لونه قبل الوصول لنقطة التكافؤ داخل المنطقة المنظمة.";
-        }
+        suitable = ['phenolphthalein', 'thymolphthalein'].includes(indKey);
       } else if (sys.typeCode === 'SA_WB' || sys.typeCode === 'WB_SA') {
-        if (['methyl_orange', 'methyl_red', 'bromocresol_green'].includes(indKey)) {
-          suitable = true;
-          note = "مناسب جداً؛ القفزة الرأسية تقع في النطاق الحمضي ومدى الدليل يقع ضمنها.";
-        } else {
-          suitable = false;
-          note = "غير مناسب؛ يتغير لونه بعد تجاوز نقطة التكافؤ بفارق كبير.";
-        }
+        suitable = ['methyl_orange', 'methyl_red', 'bromocresol_green'].includes(indKey);
       }
 
       const panel = document.getElementById('indicatorPanel');
       if (suitable) {
         panel.style.background = '#def7ec';
         panel.style.color = '#03543f';
-        panel.innerHTML = `✓ الدليل (${ind.name}) <b>مناسب تماماً</b><br><small>${note}</small>`;
+        panel.innerHTML = `✓ الدليل (${ind.name}) <b>مناسب</b> | اللون: <b>${currentColor}</b>`;
       } else {
         panel.style.background = '#fde8e8';
         panel.style.color = '#9b1c1c';
-        panel.innerHTML = `✕ الدليل (${ind.name}) <b>غير مناسب علمياً</b><br><small>${note}</small>`;
+        panel.innerHTML = `✗ الدليل (${ind.name}) <b>غير مناسب</b> | اللون: <b>${currentColor}</b>`;
       }
     }
+
+    function generate15Points() {
+      const Veq = getVeq();
+      const pts = [];
+
+      const beforeV = [
+        0.0,
+        parseFloat((Veq * 0.25).toFixed(1)),
+        parseFloat((Veq * 0.50).toFixed(1)),
+        parseFloat((Veq * 0.75).toFixed(1)),
+        parseFloat((Veq * 0.90).toFixed(1))
+      ];
+      beforeV.forEach((v, idx) => {
+        pts.push({
+          num: idx + 1,
+          stage: 'قبل التكافؤ',
+          v: v,
+          desc: idx === 0 ? 'البداية' : (idx === 2 ? 'نصف التكافؤ' : 'منطقة منظمة')
+        });
+      });
+
+      const atV = [
+        parseFloat(Math.max(0.1, Veq - 0.5).toFixed(1)),
+        parseFloat(Math.max(0.1, Veq - 0.1).toFixed(2)),
+        parseFloat(Veq.toFixed(2)),
+        parseFloat((Veq + 0.1).toFixed(2)),
+        parseFloat((Veq + 0.5).toFixed(1))
+      ];
+      atV.forEach((v, idx) => {
+        pts.push({
+          num: idx + 6,
+          stage: 'عند التكافؤ',
+          v: v,
+          desc: idx === 2 ? 'نقطة التكافؤ الدقيقة' : 'داخل القفزة'
+        });
+      });
+
+      const afterV = [
+        parseFloat((Veq + 1.0).toFixed(1)),
+        parseFloat((Veq + 3.0).toFixed(1)),
+        parseFloat((Veq + 6.0).toFixed(1)),
+        parseFloat((Veq + 10.0).toFixed(1)),
+        parseFloat(Math.min(maxVLimit, Veq + 15.0).toFixed(1))
+      ];
+      afterV.forEach((v, idx) => {
+        pts.push({
+          num: idx + 11,
+          stage: 'بعد التكافؤ',
+          v: v,
+          desc: idx === 4 ? 'نهاية المنحنى' : 'فائض من المعاير'
+        });
+      });
+
+      return pts;
+    }
+
+    function populateDropdownAndTable() {
+      const pts = generate15Points();
+      const dSelect = document.getElementById('pointsDropdown');
+      const vhTbody = document.getElementById('vhTableBody');
+
+      dSelect.innerHTML = '';
+      vhTbody.innerHTML = '';
+
+      const gBefore = document.createElement('optgroup'); gBefore.label = '🔵 5 نقاط قبل التكافؤ';
+      const gAt = document.createElement('optgroup'); gAt.label = '🟢 5 نقاط عند وحول التكافؤ';
+      const gAfter = document.createElement('optgroup'); gAfter.label = '🔴 5 نقاط بعد التكافؤ';
+
+      pts.forEach(p => {
+        const ph = calculatePHAt(p.v);
+
+        const opt = document.createElement('option');
+        opt.value = p.v;
+        opt.textContent = `#${p.num} [V: ${p.v.toFixed(1)} ${currentUnit}] → pH: ${ph.toFixed(2)} (${p.desc})`;
+        
+        if (p.num <= 5) gBefore.appendChild(opt);
+        else if (p.num <= 10) gAt.appendChild(opt);
+        else gAfter.appendChild(opt);
+
+        const tr = document.createElement('tr');
+        tr.id = `row-pt-${p.num}`;
+        tr.className = (p.stage === 'عند التكافؤ' && p.desc.includes('الدقيقة')) ? 'eq-row' : '';
+        tr.onclick = () => applyPointDirect(p.v);
+        tr.innerHTML = `
+          <td><b>${p.num}</b></td>
+          <td><b>${p.v.toFixed(1)}</b></td>
+          <td style="color:var(--primary); font-weight:bold;">${ph.toFixed(2)}</td>
+          <td><small>${p.desc}</small></td>
+        `;
+        vhTbody.appendChild(tr);
+      });
+
+      dSelect.appendChild(gBefore);
+      dSelect.appendChild(gAt);
+      dSelect.appendChild(gAfter);
+
+      syncUIWithCurrentV();
+    }
+
+    function onSelectDropdownPoint(val) {
+      if (val !== undefined && val !== "") {
+        applyPointDirect(parseFloat(val));
+      }
+    }
+
+    function applyPointDirect(v) {
+      currentVAdded = v;
+      document.getElementById('volSlider').value = currentVAdded;
+      triggerDroplet();
+      updateInfo();
+      renderApparatus();
+      drawGraph();
+      syncUIWithCurrentV();
+    }
+
+    function syncUIWithCurrentV() {
+      const pts = generate15Points();
+      let closest = pts[0];
+      let minDiff = 9999;
+      pts.forEach(p => {
+        const diff = Math.abs(p.v - currentVAdded);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closest = p;
+        }
+      });
+
+      const dSelect = document.getElementById('pointsDropdown');
+      if (minDiff <= 0.45) {
+        dSelect.value = closest.v;
+      }
+
+      pts.forEach(p => {
+        const r = document.getElementById(`row-pt-${p.num}`);
+        if (r) r.classList.remove('active-row');
+      });
+
+      if (minDiff <= 0.45) {
+        const activeR = document.getElementById(`row-pt-${closest.num}`);
+        if (activeR) {
+          activeR.classList.add('active-row');
+          activeR.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    }
+
+    function resizeAndDrawGraph() {
+      const wrapper = tCanvas.parentElement;
+      tCanvas.width = wrapper.clientWidth;
+      tCanvas.height = wrapper.clientHeight;
+      
+      // ضبط لوحة الشاشة بالكامل بدقة
+      overlayCanvas.width = window.innerWidth;
+      overlayCanvas.height = window.innerHeight;
+
+      drawGraph();
+    }
+    window.addEventListener('resize', resizeAndDrawGraph);
 
     function drawGraph() {
       const w = tCanvas.width;
       const h = tCanvas.height;
-      const pad = { top: 30, right: 30, bottom: 50, left: 55 };
+      if (w === 0 || h === 0) return;
 
+      const pad = { top: 16, right: 18, bottom: 32, left: 42 };
       tCtx.clearRect(0, 0, w, h);
 
       const toX = (v) => pad.left + (v / maxVLimit) * (w - pad.left - pad.right);
       const toY = (pH) => h - pad.bottom - (pH / 14.0) * (h - pad.top - pad.bottom);
 
-      // 1. شبكة الـ pH
+      // شبكة pH
       tCtx.strokeStyle = '#f1f5f9';
       tCtx.lineWidth = 1;
       for (let p = 0; p <= 14; p += 2) {
@@ -598,12 +1364,12 @@
         tCtx.stroke();
 
         tCtx.fillStyle = '#64748b';
-        tCtx.font = '11px sans-serif';
+        tCtx.font = '9px sans-serif';
         tCtx.textAlign = 'right';
-        tCtx.fillText(p.toString(), pad.left - 8, toY(p) + 4);
+        tCtx.fillText(p.toString(), pad.left - 5, toY(p) + 3);
       }
 
-      // خطوط الحجم
+      // شبكة الحجم
       const stepGrid = maxVLimit <= 60 ? 5 : 10;
       for (let v = 0; v <= maxVLimit; v += stepGrid) {
         tCtx.beginPath();
@@ -612,12 +1378,12 @@
         tCtx.stroke();
 
         tCtx.fillStyle = '#64748b';
-        tCtx.font = '11px sans-serif';
+        tCtx.font = '9px sans-serif';
         tCtx.textAlign = 'center';
-        tCtx.fillText(v.toString(), toX(v), h - pad.bottom + 16);
+        tCtx.fillText(v.toString(), toX(v), h - pad.bottom + 12);
       }
 
-      // 2. مدى الكاشف
+      // مدى الدليل
       const indKey = document.getElementById('indicator').value;
       const ind = indicators[indKey];
       const yMin = toY(ind.max);
@@ -626,18 +1392,18 @@
       tCtx.fillStyle = ind.color;
       tCtx.fillRect(pad.left, yMin, (w - pad.left - pad.right), yMax - yMin);
       tCtx.strokeStyle = ind.stroke;
-      tCtx.setLineDash([4, 4]);
+      tCtx.setLineDash([3, 3]);
       tCtx.strokeRect(pad.left, yMin, (w - pad.left - pad.right), yMax - yMin);
       tCtx.setLineDash([]);
 
       tCtx.fillStyle = ind.stroke;
-      tCtx.font = 'bold 11px sans-serif';
+      tCtx.font = 'bold 9px sans-serif';
       tCtx.textAlign = 'left';
-      tCtx.fillText(`مدى تحول ${ind.name} (${ind.min} - ${ind.max})`, pad.left + 10, yMin + 14);
+      tCtx.fillText(`مدى تحول ${ind.name} (${ind.min} - ${ind.max})`, pad.left + 5, yMin + 10);
 
-      // 3. المحاور الرئيسية
+      // المحاور
       tCtx.strokeStyle = '#334155';
-      tCtx.lineWidth = 2;
+      tCtx.lineWidth = 1.5;
       tCtx.beginPath();
       tCtx.moveTo(pad.left, pad.top);
       tCtx.lineTo(pad.left, h - pad.bottom);
@@ -645,14 +1411,23 @@
       tCtx.stroke();
 
       tCtx.fillStyle = '#0f172a';
-      tCtx.font = 'bold 11px sans-serif';
+      tCtx.font = 'bold 9.5px sans-serif';
       tCtx.textAlign = 'center';
-      tCtx.fillText("الحجم المضاف من السحاحة (cm³)", pad.left + (w - pad.left - pad.right)/2, h - 12);
+      tCtx.fillText(`الحجم المضاف من السحاحة V (${currentUnit})`, pad.left + (w - pad.left - pad.right)/2, h - 5);
 
-      // 4. رسم منحنى المعايرة
+      tCtx.save();
+      tCtx.translate(13, pad.top + (h - pad.top - pad.bottom)/2);
+      tCtx.rotate(-Math.PI / 2);
+      tCtx.fillStyle = '#0f172a';
+      tCtx.font = 'bold 9.5px sans-serif';
+      tCtx.textAlign = 'center';
+      tCtx.fillText("الرقم الهيدروجيني (pH)", 0, 0);
+      tCtx.restore();
+
+      // رسم المنحنى
       tCtx.beginPath();
       tCtx.strokeStyle = '#1a56db';
-      tCtx.lineWidth = 3;
+      tCtx.lineWidth = 2.4;
 
       const stepPlot = 0.1;
       let first = true;
@@ -669,7 +1444,7 @@
       tCtx.lineTo(toX(currentVAdded), toY(curPH));
       tCtx.stroke();
 
-      // 5. إسقاط وتوصيل نقطة التكافؤ
+      // نقطة التكافؤ
       const Veq = getVeq();
       const pHeq = calculatePHAt(Veq);
 
@@ -678,9 +1453,9 @@
         const yEq = toY(pHeq);
 
         tCtx.beginPath();
-        tCtx.setLineDash([5, 4]);
+        tCtx.setLineDash([4, 3]);
         tCtx.strokeStyle = '#057a55';
-        tCtx.lineWidth = 1.8;
+        tCtx.lineWidth = 1.3;
         tCtx.moveTo(xEq, yEq);
         tCtx.lineTo(xEq, h - pad.bottom);
         tCtx.stroke();
@@ -692,36 +1467,152 @@
         tCtx.setLineDash([]);
 
         tCtx.beginPath();
-        tCtx.arc(xEq, yEq, 6.5, 0, 2 * Math.PI);
+        tCtx.arc(xEq, yEq, 4.5, 0, 2 * Math.PI);
         tCtx.fillStyle = '#057a55';
         tCtx.fill();
         tCtx.strokeStyle = '#ffffff';
-        tCtx.lineWidth = 2;
+        tCtx.lineWidth = 1.5;
         tCtx.stroke();
 
         tCtx.fillStyle = '#057a55';
-        tCtx.font = 'bold 11px sans-serif';
+        tCtx.font = 'bold 9.5px sans-serif';
         tCtx.textAlign = 'right';
-        tCtx.fillText(`نقطة التكافؤ (${Veq.toFixed(1)} cm³ , pH ${pHeq.toFixed(2)})`, xEq - 10, yEq - 8);
-
-        tCtx.fillStyle = '#057a55';
-        tCtx.font = 'bold 11px sans-serif';
-        tCtx.textAlign = 'center';
-        tCtx.fillText(`${Veq.toFixed(1)}`, xEq, h - pad.bottom + 32);
-
-        tCtx.textAlign = 'right';
-        tCtx.fillText(`${pHeq.toFixed(1)}`, pad.left - 6, yEq + 4);
+        tCtx.fillText(`نقطة التكافؤ (${Veq.toFixed(1)} ${currentUnit} , pH ${pHeq.toFixed(2)})`, xEq - 5, yEq - 5);
       }
 
-      // النقطة الحالية المتحركة
+      // النقطة الحالية
       tCtx.beginPath();
-      tCtx.arc(toX(currentVAdded), toY(curPH), 5.5, 0, 2 * Math.PI);
+      tCtx.arc(toX(currentVAdded), toY(curPH), 4.5, 0, 2 * Math.PI);
       tCtx.fillStyle = '#dc2626';
       tCtx.fill();
       tCtx.strokeStyle = '#ffffff';
-      tCtx.lineWidth = 2;
+      tCtx.lineWidth = 1.5;
       tCtx.stroke();
     }
+
+    // ========================================================
+    // نظام القلم الشامل للشاشة بالكامل مع استجابة فورية للأزرار
+    // ========================================================
+    let screenMode = 'TOUCH'; // 'TOUCH' | 'PEN' | 'ERASER'
+    let isDrawingNow = false;
+    let selectedPenColor = '#dc2626';
+    let penStrokes = [];
+    let currentStroke = null;
+
+    function setScreenMode(mode) {
+      screenMode = mode;
+      document.getElementById('btnTouch').classList.toggle('active', mode === 'TOUCH');
+      document.getElementById('btnPen').classList.toggle('active', mode === 'PEN');
+      document.getElementById('btnEraser').classList.toggle('active', mode === 'ERASER');
+
+      overlayCanvas.classList.remove('drawing-mode', 'eraser-mode');
+
+      if (mode === 'TOUCH') {
+        // عند اختيار اليد تصبح لوحة الرسم شفافة للمس فوراً للتحكم بالتطبيق
+      } else if (mode === 'PEN') {
+        overlayCanvas.classList.add('drawing-mode');
+      } else if (mode === 'ERASER') {
+        overlayCanvas.classList.add('eraser-mode');
+      }
+    }
+
+    function togglePenMode() {
+      if (screenMode === 'PEN') {
+        setScreenMode('TOUCH');
+      } else {
+        setScreenMode('PEN');
+      }
+    }
+
+    function selectPenColor(color, element) {
+      selectedPenColor = color;
+      document.querySelectorAll('.color-picker-dot').forEach(el => el.classList.remove('selected'));
+      element.classList.add('selected');
+      setScreenMode('PEN');
+    }
+
+    function clearDrawnCanvas() {
+      penStrokes = [];
+      overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+    }
+
+    function eraseAt(x, y) {
+      const radius = 28;
+      penStrokes = penStrokes.filter(stroke => {
+        return !stroke.points.some(pt => Math.hypot(pt.x - x, pt.y - y) < radius);
+      });
+    }
+
+    overlayCanvas.addEventListener('pointerdown', (e) => {
+      if (screenMode === 'TOUCH') return;
+      isDrawingNow = true;
+
+      if (screenMode === 'ERASER') {
+        eraseAt(e.clientX, e.clientY);
+        return;
+      }
+
+      if (screenMode === 'PEN') {
+        currentStroke = {
+          points: [{ x: e.clientX, y: e.clientY }],
+          color: selectedPenColor,
+          createdAt: Date.now(),
+          alpha: 1.0
+        };
+        penStrokes.push(currentStroke);
+      }
+    });
+
+    overlayCanvas.addEventListener('pointermove', (e) => {
+      if (!isDrawingNow) return;
+
+      if (screenMode === 'ERASER') {
+        eraseAt(e.clientX, e.clientY);
+        return;
+      }
+
+      if (screenMode === 'PEN' && currentStroke) {
+        currentStroke.points.push({ x: e.clientX, y: e.clientY });
+      }
+    });
+
+    window.addEventListener('pointerup', () => { isDrawingNow = false; currentStroke = null; });
+    window.addEventListener('pointercancel', () => { isDrawingNow = false; currentStroke = null; });
+
+    // حركة الخطوط المتلاشية على كامل الشاشة
+    function renderFadingStrokes() {
+      overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+      const now = Date.now();
+      const holdDuration = 12000;
+
+      for (let s = 0; s < penStrokes.length; s++) {
+        const stroke = penStrokes[s];
+        const age = now - stroke.createdAt;
+
+        if (age > holdDuration) stroke.alpha -= 0.015;
+
+        if (stroke.alpha > 0 && stroke.points.length > 1) {
+          overlayCtx.save();
+          overlayCtx.globalAlpha = Math.max(0, stroke.alpha);
+          overlayCtx.strokeStyle = stroke.color;
+          overlayCtx.lineWidth = 4;
+          overlayCtx.lineCap = 'round';
+          overlayCtx.lineJoin = 'round';
+
+          overlayCtx.beginPath();
+          overlayCtx.moveTo(stroke.points[0].x, stroke.points[0].y);
+          for (let p = 1; p < stroke.points.length; p++) {
+            overlayCtx.lineTo(stroke.points[p].x, stroke.points[p].y);
+          }
+          overlayCtx.stroke();
+          overlayCtx.restore();
+        }
+      }
+
+      penStrokes = penStrokes.filter(s => s.alpha > 0);
+      requestAnimationFrame(renderFadingStrokes);
+    }
+    requestAnimationFrame(renderFadingStrokes);
 
     window.onload = () => {
       resetTitration();
